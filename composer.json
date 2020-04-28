@@ -1,0 +1,32 @@
+{
+    "name": "3slab/vdm-library-ftp-transport-bundle",
+    "description": "Vdm Ftp Transport",
+    "type": "symfony-bundle",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Jonathan Bouzekri",
+            "email": "jonathan.bouzekri@suez.com"
+        },
+        {
+            "name": "Julian Marié",
+            "email": "julian.marie@free.fr"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Vdm\\Bundle\\LibraryFtpTransportBundle\\": ""
+        }
+    },
+    "require": {
+        "3slab/vdm-library-bundle": "^2.0@beta",
+        "league/flysystem-sftp": "^1.0",
+        "league/flysystem": "^1.0"
+    },
+    "require-dev": {
+        "ext-xml": "*",
+        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "phpunit/phpunit": "^9"
+    }
+}
