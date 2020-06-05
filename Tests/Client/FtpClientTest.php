@@ -29,6 +29,8 @@ class FtpClientTest extends TestCase
     {
         $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
         $this->filesystem = $this->getMockBuilder(FilesystemInterface::class)->getMock();
+        $stream = fopen('ftp/PFE/SAS01/[SpecifToulouse]_[V_Contrat].csv', 'r');
+        $this->filesystem->method('readStream')->willReturn($stream);
         $this->ftpClient = new FtpClient('localhost', 22, '', '', true, [], $this->logger);
         $this->ftpClient->setFileSystem($this->filesystem);
     }
@@ -49,7 +51,7 @@ class FtpClientTest extends TestCase
 
         $responseGet = $this->ftpClient->get($file);
 
-        $this->assertArrayHasKey("content", $responseGet);
+        $this->assertArrayHasKey("tmpfilepath", $responseGet);
     }
 
     public function testGetFtp()
@@ -66,10 +68,10 @@ class FtpClientTest extends TestCase
             "basename" => "[SpecifToulouse]_[V_Contrat].csv",
             "extension" => "csv",
             "filename" => "[SpecifToulouse]_[V_Contrat]"
-        ];        
+        ];
         $fileGet = $ftpClient->get($file);
 
-        $this->assertArrayHasKey("content", $fileGet);
+        $this->assertArrayHasKey("tmpfilepath", $fileGet);
     }
         
     public function testListFailed()

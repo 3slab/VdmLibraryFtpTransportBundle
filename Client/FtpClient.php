@@ -8,8 +8,10 @@
 
 namespace Vdm\Bundle\LibraryFtpTransportBundle\Client;
 
-use League\Flysystem\Filesystem;
+use Exception;
 use League\Flysystem\Adapter\Ftp as Adapter;
+use League\Flysystem\FileNotFoundException;
+use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemInterface;
 use League\Flysystem\Sftp\SftpAdapter;
 use Psr\Log\LoggerInterface;
@@ -62,23 +64,50 @@ class FtpClient implements FtpClientInterface
                 'ignorePassiveAddress' => (isset($options['ignorePassiveAddress'])) ? $options['ignorePassiveAddress'] : false,
             ]));
         }
-        
     }
 
     /**
      * Get file content
      * 
      * @return array
+     * @throws FileNotFoundException
      */
     public function get(array $file): array
     {
         try {
-            $file['content'] = $this->filesystem->read($file['path']);
-        } catch (\Exception $e) {
+            $file = $this->download($file);
+        } catch (Exception $e) {
             // Most of the errors are because of timeout disconnect. it forces reconnect on next operation
             $this->filesystem->getAdapter()->disconnect();
-            $file['content'] = $this->filesystem->read($file['path']);
+            $file = $this->download($file);
         }
+
+        return $file;
+    }
+
+    /**
+     * Get file content
+     *
+     * @return array
+     * @throws FileNotFoundException
+     */
+    public function download($file): array
+    {
+        $tempnam = tempnam('/tmp', uniqid());
+        $file['tmpfilepath'] = $tempnam;
+
+        $this->logger->debug(sprintf('Start downloading the file %s to: %s', $file['basename'], $tempnam));
+        $tempFile = fopen($tempnam, 'wb+');
+        $stream = $this->filesystem->readStream($file['path']);
+        while (!feof($stream)) {
+            if (fwrite($tempFile, fread($stream, 8192)) === false) {
+                $this->logger->error('Unable to write to temp file');
+                break;
+            }
+        }
+        fclose($stream);
+        fclose($tempFile);
+        $this->logger->debug('Download complete');
 
         return $file;
     }

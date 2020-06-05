@@ -35,6 +35,8 @@ class DecoratorFtpClientTest extends TestCase
     {
         $this->logger = $this->getMockBuilder(LoggerInterface::class)->getMock();
         $this->filesystem = $this->getMockBuilder(FilesystemInterface::class)->getMock();
+        $stream = fopen('ftp/PFE/SAS01/[SpecifToulouse]_[V_Contrat].csv', 'r');
+        $this->filesystem->method('readStream')->willReturn($stream);
         $this->ftpClient = new FtpClient('localhost', 22, '', '', true, [], $this->logger);
         $this->ftpClient->setFileSystem($this->filesystem);
         $this->decoratorFtpClient = $this->getMockForAbstractClass(DecoratorFtpClient::class, [$this->logger, $this->ftpClient]);
@@ -56,7 +58,7 @@ class DecoratorFtpClientTest extends TestCase
 
         $fileGet = $this->decoratorFtpClient->get($file);
 
-        $this->assertArrayHasKey("content", $fileGet);
+        $this->assertArrayHasKey("tmpfilepath", $fileGet);
     }
 
     public function testListFailed()
