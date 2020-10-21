@@ -45,7 +45,7 @@ class FtpTransport implements TransportInterface
         LoggerInterface $logger,
         AbstractFtpExecutor $ftpExecutor, 
         string $dsn, 
-        string $mode, 
+        string $mode,
         array $options
     )
     {
@@ -72,6 +72,8 @@ class FtpTransport implements TransportInterface
         $data = $envelope->getMessage()->getPayload();
         
         switch ($this->mode) {
+            case 'read':
+                $this->logger->info(sprintf('Use mode read'));
             case 'move':    
                 try {
                     $filesystem->copy($data['path'], $this->options['storage'].'/'.$data['basename']);
