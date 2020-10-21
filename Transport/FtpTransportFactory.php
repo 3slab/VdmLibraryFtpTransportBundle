@@ -67,7 +67,7 @@ class FtpTransportFactory implements TransportFactoryInterface
 
     public function createTransport(string $dsn, array $options, SerializerInterface $serializer): TransportInterface
     {
-        $mode = $options['mode'];
+        $mode = $options['mode'] ?? "read";
         $ftp_options = $options['ftp_options'];
 
         if (!isset($ftp_options['dirpath'])) {
