@@ -88,6 +88,9 @@ class FtpTransport implements TransportInterface
                 $filesystem->delete($data['path']);
                 $this->logger->info(sprintf('Delete file %s', $data['basename']));
             break;
+            default:
+                $this->logger->error(sprintf('No mode used'));
+            break;
         }
     }
 
