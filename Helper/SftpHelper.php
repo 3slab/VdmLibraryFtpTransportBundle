@@ -32,4 +32,12 @@ class SftpHelper
     {
         $this->filesystem->write($path, $content);
     }
+
+    public function writeFileStream($path, $content)
+    {
+        $tempnam = tempnam('/tmp', uniqid('', true));
+        file_put_contents($tempnam, $content);
+        $resource = fopen($tempnam, 'rb');
+        $this->filesystem->writeStream($path, $resource);
+    }
 }
