@@ -74,6 +74,7 @@ class FtpTransport implements TransportInterface
         switch ($this->mode) {
             case 'read':
                 $this->logger->info(sprintf('Use mode read'));
+                break;
             case 'move':    
                 try {
                     $filesystem->copy($data['path'], $this->options['storage'].'/'.$data['basename']);
@@ -83,14 +84,14 @@ class FtpTransport implements TransportInterface
                     // Que faire si le fichier existe déjà ?
                     throw $exception;
                 }
-            break;
+                break;
             case 'delete':
                 $filesystem->delete($data['path']);
                 $this->logger->info(sprintf('Delete file %s', $data['basename']));
-            break;
+                break;
             default:
                 $this->logger->error(sprintf('No mode used'));
-            break;
+                break;
         }
     }
 
