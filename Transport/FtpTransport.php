@@ -12,6 +12,7 @@ use League\Flysystem\FileExistsException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\TransportInterface;
+use Vdm\Bundle\LibraryFtpTransportBundle\Exception\StfpFileNotFoundException;
 use Vdm\Bundle\LibraryFtpTransportBundle\Executor\AbstractFtpExecutor;
 
 class FtpTransport implements TransportInterface
@@ -56,11 +57,21 @@ class FtpTransport implements TransportInterface
         $this->options = $options;
     }
 
+    /**
+     * @throws StfpFileNotFoundException
+     */
     public function get(): iterable
     {
         $this->logger->debug('get called');
 
         $files = $this->ftpExecutor->getFtpClient()->list($this->options['dirpath']);
+
+        if ($files === null) {
+            $error = sprintf('No file found in sftp dirpath "%s"', $this->options['dirpath']);
+            $this->logger->critical($error);
+
+            throw new StfpFileNotFoundException($error);
+        }
 
         return $this->ftpExecutor->execute($files);
     }
