@@ -125,7 +125,7 @@ class FtpClient implements FtpClientInterface
         if ($this->filesystem->has($dirpath)) {
             $files = $this->filesystem->listContents($dirpath);
         } else {
-            $this->logger->info(sprintf('Directory %s inexistant sur le serveur', $dirpath));
+            $this->logger->error(sprintf('Directory %s inexistant sur le serveur', $dirpath));
         }
 
         return $files;
